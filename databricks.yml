@@ -1,0 +1,49 @@
+bundle:
+  name: wanderbricks-analytics
+  databricks_cli_version: ">=0.218.0"
+
+include:
+  - "resources/*.yml"
+
+variables:
+  catalog:
+    description: "Unity Catalog catalog name"
+    default: "hk_catalog"
+  schema:
+    description: "Schema for pipeline output"
+    default: "default"
+  notification_email:
+    description: "Email for job failure alerts"
+    default: "data-team@example.com"
+
+workspace:
+  host: https://fe-sandbox-serverless-j45hcq.cloud.databricks.com
+  profile: DEFAULT
+
+permissions:
+  - user_name: hosea.kidane@databricks.com
+    level: CAN_MANAGE
+  - level: CAN_VIEW
+    group_name: users
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      catalog: hk_catalog
+      schema: default
+
+  prod:
+    mode: production
+    workspace:
+      host: https://fe-sandbox-serverless-j45hcq.cloud.databricks.com
+      root_path: /Shared/.bundle/prod/${bundle.name}
+    run_as:
+      service_principal_name: prod-service-principal
+    variables:
+      catalog: prod_catalog
+      schema: production
+      notification_email: prod-alerts@example.com
+    presets:
+      trigger_pause_status: UNPAUSED

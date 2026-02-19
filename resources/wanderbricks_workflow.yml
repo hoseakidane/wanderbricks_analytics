@@ -1,0 +1,33 @@
+resources:
+  jobs:
+    wanderbricks-workflow:
+      name: "[${bundle.target}] WanderBricks Analytics Workflow"
+
+      tasks:
+        - task_key: generate-clickstream-data
+          notebook_task:
+            notebook_path: ../src/notebooks/click_stream_data_gen.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+          environment_key: default
+
+        - task_key: run-etl-pipeline
+          depends_on:
+            - task_key: generate-clickstream-data
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.wanderbricks-etl-pipeline.id}
+
+      environments:
+        - environment_key: default
+          spec:
+            client: "1"
+
+      email_notifications:
+        on_failure:
+          - ${var.notification_email}
+
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+        timezone_id: "UTC"
+        pause_status: PAUSED

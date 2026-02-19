@@ -1,0 +1,24 @@
+resources:
+  pipelines:
+    wanderbricks-etl-pipeline:
+      name: "[${bundle.target}] WanderBricks ETL Pipeline"
+      catalog: ${var.catalog}
+      target: ${var.schema}
+
+      libraries:
+        - file:
+            path: ../src/pipelines/wanderbricks_etl.sql
+
+      continuous: false
+      serverless: true
+
+      configuration:
+        source_catalog: ${var.catalog}
+        source_schema: ${var.schema}
+
+      notifications:
+        - email_recipients:
+            - ${var.notification_email}
+          alerts:
+            - on-update-failure
+            - on-flow-failure
