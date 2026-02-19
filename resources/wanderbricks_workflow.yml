@@ -6,7 +6,7 @@ resources:
       tasks:
         - task_key: generate-clickstream-data
           notebook_task:
-            notebook_path: ../src/notebooks/click_stream_data_gen.py
+            notebook_path: ../srs/notebooks/click_stream_data_gen.py
             base_parameters:
               catalog: ${var.catalog}
               schema: ${var.schema}
