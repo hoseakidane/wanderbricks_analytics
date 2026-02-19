@@ -7,7 +7,7 @@ resources:
 
       libraries:
         - file:
-            path: ../srs/pipelines/wanderbricks_etl.sql
+            path: ../src/pipelines/wanderbricks_etl.sql
 
       continuous: false
       serverless: true

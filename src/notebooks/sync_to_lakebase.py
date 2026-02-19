@@ -56,19 +56,26 @@ w = WorkspaceClient()
 # CONFIGURATION
 # ============================================================================
 
+# Parameters (populated from job base_parameters)
+dbutils.widgets.text("catalog", "hk_catalog")
+dbutils.widgets.text("schema", "default")
+dbutils.widgets.text("lakebase_catalog", "lakebase_marketplace_v2")
+dbutils.widgets.text("lakebase_instance_name", "marketplace-intel-db-v2")
+dbutils.widgets.text("lakebase_capacity", "CU_1")
+
 # Source configuration (pipeline output)
-SOURCE_CATALOG = "hk_catalog"
-SOURCE_SCHEMA = "final"
+SOURCE_CATALOG = dbutils.widgets.get("catalog")
+SOURCE_SCHEMA = dbutils.widgets.get("schema")
 
 # Target configuration (Lakebase)
-LAKEBASE_CATALOG = "lakebase_marketplace_v2"
+LAKEBASE_CATALOG = dbutils.widgets.get("lakebase_catalog")
 LAKEBASE_SCHEMA = "gold"
-LAKEBASE_INSTANCE_NAME = "marketplace-intel-db-v2"
+LAKEBASE_INSTANCE_NAME = dbutils.widgets.get("lakebase_instance_name")
 LAKEBASE_DATABASE_NAME = "databricks_postgres-v2"  # Default Postgres database name
-LAKEBASE_CAPACITY = "CU_1"  # Start with smallest capacity
+LAKEBASE_CAPACITY = dbutils.widgets.get("lakebase_capacity")
 
 # Storage configuration for sync pipeline metadata
-STORAGE_CATALOG = "hk_catalog"
+STORAGE_CATALOG = dbutils.widgets.get("catalog")
 STORAGE_SCHEMA = "wanderbricks_lakebase"
 
 # ============================================================================

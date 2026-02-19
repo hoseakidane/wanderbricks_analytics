@@ -14,11 +14,13 @@ variables:
     default: "default"
   notification_email:
     description: "Email for job failure alerts"
-    default: "data-team@example.com"
+    default: "hosea.kidane@databricks.com"
+  lakebase_capacity:
+    description: "Lakebase instance capacity unit"
+    default: "CU_1"
 
 workspace:
   host: https://fe-sandbox-serverless-j45hcq.cloud.databricks.com
-  profile: DEFAULT
 
 permissions:
   - user_name: hosea.kidane@databricks.com
@@ -30,9 +32,12 @@ targets:
   dev:
     mode: development
     default: true
+    workspace:
+      profile: DEFAULT
     variables:
       catalog: hk_catalog
       schema: default
+      lakebase_capacity: CU_1
 
   prod:
     mode: production
@@ -40,10 +45,11 @@ targets:
       host: https://fe-sandbox-serverless-j45hcq.cloud.databricks.com
       root_path: /Shared/.bundle/prod/${bundle.name}
     run_as:
-      service_principal_name: prod-service-principal
+      service_principal_name: hosea.kidane@databricks.com
     variables:
-      catalog: prod_catalog
-      schema: production
-      notification_email: prod-alerts@example.com
+      catalog: hk_catalog
+      schema: default
+      notification_email: hosea.kidane@databricks.com
+      lakebase_capacity: CU_2
     presets:
       trigger_pause_status: UNPAUSED

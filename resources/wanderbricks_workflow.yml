@@ -6,7 +6,7 @@ resources:
       tasks:
         - task_key: generate-clickstream-data
           notebook_task:
-            notebook_path: ../srs/notebooks/click_stream_data_gen.py
+            notebook_path: ../src/notebooks/click_stream_data_gen.py
             base_parameters:
               catalog: ${var.catalog}
               schema: ${var.schema}
@@ -17,6 +17,17 @@ resources:
             - task_key: generate-clickstream-data
           pipeline_task:
             pipeline_id: ${resources.pipelines.wanderbricks-etl-pipeline.id}
+
+        - task_key: sync-to-lakebase
+          depends_on:
+            - task_key: run-etl-pipeline
+          notebook_task:
+            notebook_path: ../src/notebooks/sync_to_lakebase.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              lakebase_capacity: ${var.lakebase_capacity}
+          environment_key: default
 
       environments:
         - environment_key: default
