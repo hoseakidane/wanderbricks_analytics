@@ -1,0 +1,51 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Validate Bundle
+        env:
+          DATABRICKS_AUTH_TYPE: github-oidc
+          DATABRICKS_HOST: ${{ vars.PROD_DATABRICKS_HOST }}
+          DATABRICKS_CLIENT_ID: ${{ vars.PROD_DATABRICKS_CLIENT_ID }}
+        run: databricks bundle validate -t prod
+
+  deploy-prod:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Deploy Bundle to Prod
+        env:
+          DATABRICKS_AUTH_TYPE: github-oidc
+          DATABRICKS_HOST: ${{ vars.PROD_DATABRICKS_HOST }}
+          DATABRICKS_CLIENT_ID: ${{ vars.PROD_DATABRICKS_CLIENT_ID }}
+        run: databricks bundle deploy -t prod
+
+      - name: Run Workflow
+        env:
+          DATABRICKS_AUTH_TYPE: github-oidc
+          DATABRICKS_HOST: ${{ vars.PROD_DATABRICKS_HOST }}
+          DATABRICKS_CLIENT_ID: ${{ vars.PROD_DATABRICKS_CLIENT_ID }}
+        run: databricks bundle run wanderbricks-workflow -t prod
