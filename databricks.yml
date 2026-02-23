@@ -8,7 +8,7 @@ include:
 variables:
   catalog:
     description: "Unity Catalog catalog name"
-    default: "hk_catalog"
+    default: "hk_catalog_dev"
   schema:
     description: "Schema for pipeline output"
     default: "default"
@@ -18,14 +18,30 @@ variables:
   lakebase_capacity:
     description: "Lakebase instance capacity unit"
     default: "CU_1"
+  lakebase_catalog:
+    description: "Lakebase Unity Catalog catalog name"
+    default: "lakebase_marketplace_dev"
+  lakebase_instance_name:
+    description: "Lakebase database instance name"
+    default: "marketplace-intel-db-dev"
+  clickstream_table_name:
+    description: "Name of the synthetic clickstream table (shared between data gen and ETL)"
+    default: "clickstream_synthetic_v3"
+  lakebase_schema:
+    description: "Schema within Lakebase catalog for synced gold tables"
+    default: "gold"
+  lakebase_database_name:
+    description: "PostgreSQL database name in Lakebase instance"
+    default: "databricks_postgres"
+  storage_schema:
+    description: "Schema for Lakebase sync pipeline metadata"
+    default: "wanderbricks_lakebase"
 
 workspace:
   host: https://fe-sandbox-serverless-j45hcq.cloud.databricks.com
 
 permissions:
   - user_name: hosea.kidane@databricks.com
-    level: CAN_MANAGE
-  - service_principal_name: hk-sp-for-cicd
     level: CAN_MANAGE
   - level: CAN_VIEW
     group_name: users
@@ -35,23 +51,26 @@ targets:
     mode: development
     default: true
     workspace:
-      profile: DEFAULT
+      profile: one-env-temp
     variables:
-      catalog: hk_catalog
+      catalog: hk_catalog_dev
       schema: default
       lakebase_capacity: CU_1
+      lakebase_catalog: lakebase_marketplace_dev
+      lakebase_instance_name: marketplace-intel-db-dev
 
   prod:
     mode: production
     workspace:
       host: https://fe-sandbox-serverless-sandbox-n841w3.cloud.databricks.com/
+      profile: one-env-temp-prod
       root_path: /Shared/.bundle/prod/${bundle.name}
     run_as:
-      service_principal_name: hk-sp-for-cicd
+      user_name: hosea.kidane@databricks.com
     variables:
-      catalog: hk_catalog
+      catalog: hk_catalog_prod
       schema: default
       notification_email: hosea.kidane@databricks.com
       lakebase_capacity: CU_2
-    presets:
-      trigger_pause_status: UNPAUSED
+      lakebase_catalog: lakebase_marketplace_prod
+      lakebase_instance_name: marketplace-intel-db-prod

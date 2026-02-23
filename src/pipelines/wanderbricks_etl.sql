@@ -17,7 +17,7 @@
 -- ----------------------------------------------------------------------------
 -- silver_clickstream
 -- Purpose: Clean clickstream with device/referrer extracted, date added
--- Source: hk_catalog.default.clickstream_synthetic_v3
+-- Source: ${source_catalog}.${source_schema}.${clickstream_table_name}
 -- Type: Streaming table (incremental append-only)
 -- ----------------------------------------------------------------------------
 CREATE OR REFRESH STREAMING TABLE silver_clickstream (
@@ -34,7 +34,7 @@ SELECT
   metadata.device AS device,
   metadata.referrer AS referrer,
   DATE(timestamp) AS event_date
-FROM STREAM(${source_catalog}.${source_schema}.clickstream_synthetic_v3);
+FROM STREAM(${source_catalog}.${source_schema}.${clickstream_table_name});
 
 -- ----------------------------------------------------------------------------
 -- silver_bookings_enriched

@@ -381,12 +381,18 @@
 # COMMAND ----------
 
 # DBTITLE 1,Setup Parameters
-dbutils.widgets.text("catalog", "hk_catalog")
+dbutils.widgets.text("catalog", "hk_catalog_dev")
 dbutils.widgets.text("schema", "default")
+dbutils.widgets.text("clickstream_table_name", "clickstream_synthetic_v3")
 catalog = dbutils.widgets.get("catalog")
 schema = dbutils.widgets.get("schema")
-target_table = f"{catalog}.{schema}.clickstream_synthetic_v3"
+clickstream_table_name = dbutils.widgets.get("clickstream_table_name")
+target_table = f"{catalog}.{schema}.{clickstream_table_name}"
 print(f"Target table: {target_table}")
+
+# Ensure schema exists (catalog must pre-exist for bundle deploy to succeed)
+spark.sql(f"CREATE SCHEMA IF NOT EXISTS {catalog}.{schema}")
+print(f"Schema '{catalog}.{schema}' ready")
 
 # COMMAND ----------
 
@@ -835,7 +841,7 @@ print(f"Generated {len(events_data):,} events in Python")
 # Create Spark DataFrame
 from pyspark.sql.types import StructType, StructField, LongType, StringType, TimestampType
 
-schema = StructType([
+non_booking_schema = StructType([
     StructField("user_id", LongType(), True),
     StructField("property_id", LongType(), True),
     StructField("event", StringType(), False),
@@ -846,7 +852,7 @@ schema = StructType([
     ]), False)
 ])
 
-non_booking_events = spark.createDataFrame(events_data, schema)
+non_booking_events = spark.createDataFrame(events_data, non_booking_schema)
 
 print(f"\n✅ Generated {non_booking_events.count():,} non-booking view events")
 print(f"   Unique non-booking users: {non_booking_events.select('user_id').distinct().count():,}")

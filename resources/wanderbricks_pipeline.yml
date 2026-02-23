@@ -15,6 +15,7 @@ resources:
       configuration:
         source_catalog: ${var.catalog}
         source_schema: ${var.schema}
+        clickstream_table_name: ${var.clickstream_table_name}
 
       notifications:
         - email_recipients:

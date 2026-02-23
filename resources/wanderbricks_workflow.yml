@@ -10,6 +10,7 @@ resources:
             base_parameters:
               catalog: ${var.catalog}
               schema: ${var.schema}
+              clickstream_table_name: ${var.clickstream_table_name}
           environment_key: default
 
         - task_key: run-etl-pipeline
@@ -27,6 +28,11 @@ resources:
               catalog: ${var.catalog}
               schema: ${var.schema}
               lakebase_capacity: ${var.lakebase_capacity}
+              lakebase_catalog: ${var.lakebase_catalog}
+              lakebase_instance_name: ${var.lakebase_instance_name}
+              lakebase_schema: ${var.lakebase_schema}
+              lakebase_database_name: ${var.lakebase_database_name}
+              storage_schema: ${var.storage_schema}
           environment_key: default
 
       environments:
@@ -37,8 +43,3 @@ resources:
       email_notifications:
         on_failure:
           - ${var.notification_email}
-
-      schedule:
-        quartz_cron_expression: "0 0 6 * * ?"
-        timezone_id: "UTC"
-        pause_status: UNPAUSED
